@@ -1,4 +1,4 @@
-import {Controller, Get, Param} from "@nestjs/common";
+import {Controller, Get, Param, Query} from "@nestjs/common";
 import {Artist} from "./artist.entity";
 import {ArtistService} from "./artist.service";
 
@@ -7,9 +7,9 @@ export class ArtistController {
     constructor(private readonly artistService: ArtistService) {
     }
 
-    @Get()
-    async getAll(): Promise<Artist[]> {
-        return await this.artistService.findAll();
+    @Get('search')
+    async searchArtist(@Query('query') query: string): Promise<Artist[]> {
+        return await this.artistService.search(query);
     }
 
     @Get(':id')

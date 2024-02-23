@@ -1,5 +1,5 @@
 import {Inject, Injectable} from "@nestjs/common";
-import {Repository} from "typeorm";
+import {ILike, Repository} from "typeorm";
 import {Artist} from "./artist.entity";
 
 @Injectable()
@@ -12,6 +12,16 @@ export class ArtistService {
 
     async findAll(): Promise<Artist[]> {
         return this.photoRepository.find();
+    }
+
+    async search(query: string): Promise<Artist[]> {
+        return this.photoRepository.find({
+            where: [
+                {firstname: ILike(`%${query}%`)},
+                {lastname: ILike(`%${query}%`)},
+            ],
+            take: 20,
+        });
     }
 
     async find(id: number): Promise<Artist> {

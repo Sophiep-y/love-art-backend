@@ -12,6 +12,7 @@ async function bootstrap() {
         optionsSuccessStatus: 204,
         credentials: true,
     })
+    app.setGlobalPrefix("api")
     setupSwagger(app);
     await app.listen(3000,);
 
@@ -27,5 +28,5 @@ function setupSwagger(app: INestApplication): void {
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup("api", app, document);
+    SwaggerModule.setup("/api-docs", app, document);
 }
