@@ -1,4 +1,4 @@
-import {Controller, Get, Param, Query} from "@nestjs/common";
+import {Controller, Get, Param} from "@nestjs/common";
 import {Artist} from "./artist.entity";
 import {ArtistService} from "./artist.service";
 
@@ -12,8 +12,8 @@ export class ArtistController {
         return await this.artistService.findAll();
     }
 
-    @Get(":id")
-    async getOne(@Query('id') id: number): Promise<Artist> {
+    @Get(':id')
+    async getOne(@Param('id') id: number): Promise<Artist> {
         return await this.artistService.find(id);
     }
 }
