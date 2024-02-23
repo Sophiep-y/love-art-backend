@@ -14,7 +14,7 @@ export class ArtistService {
         return this.photoRepository.find();
     }
 
-    async find(id: string): Promise<Artist> {
+    async find(id: number): Promise<Artist> {
         return this.photoRepository.findOne({
             where: {id},
         });

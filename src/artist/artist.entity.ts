@@ -1,31 +1,32 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
 
-@Entity("artists")
+
+@Entity('artists')
 export class Artist {
-  @PrimaryColumn()
-  id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({ type: "text", nullable: true })
-  profile: string;
+    @Column({type: 'text', nullable: true})
+    profile: string;
 
-  @Column({ nullable: true })
-  artnet_ranking: string;
+    @Column({type: 'int', nullable: true})
+    artnet_ranking: number;
 
-  @Column()
-  fm_id: string;
+    @Column({type: 'int', nullable: true})
+    fm_id: number;
 
-  @Column()
-  firstname: string;
+    @Column({type: 'varchar', length: 255, charset: 'utf8', nullable: true})
+    firstname: string;
 
-  @Column()
-  lastname: string;
+    @Column({type: 'varchar', length: 255, charset: 'utf8', nullable: true})
+    lastname: string;
 
-  @Column()
-  dateofbirth: string;
+    @Column({type: 'varchar', length: 255, nullable: true})
+    dateofbirth: string;
 
-  @Column({ nullable: true })
-  dateofdeath: string;
+    @Column({type: 'varchar', length: 255, nullable: true})
+    dateofdeath: string;
 
-  @Column()
-  birthplace: string;
+    @Column({type: 'varchar', length: 255, nullable: true})
+    birthplace: string;
 }

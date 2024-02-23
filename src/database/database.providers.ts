@@ -6,10 +6,10 @@ export const databaseProviders = [
         useFactory: async () => {
             const dataSource = new DataSource({
                 type: "mariadb",
-                host: "clients.loveart.com",
+                host: "localhost",
                 port: 3306,
-                username: "loveartc",
-                password: "C6ipE9n5w7",
+                username: "root",
+                password: "mypass",
                 database: "loveartc_db1",
                 entities: [__dirname + "/../**/*.entity{.ts,.js}"],
             });
