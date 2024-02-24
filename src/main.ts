@@ -2,6 +2,7 @@ import {NestFactory} from "@nestjs/core";
 import {AppModule} from "./app.module";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {INestApplication, Logger} from "@nestjs/common";
+import {ConfigService} from "@nestjs/config";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -12,13 +13,15 @@ async function bootstrap() {
         optionsSuccessStatus: 204,
         credentials: true,
     })
+
     app.setGlobalPrefix("api")
     setupSwagger(app);
-    await app.listen(3000,);
+    const configService = app.get(ConfigService);
+    await app.listen(configService.get<number>("PORT") || 3000);
 
 }
 
-bootstrap().then((r) => new Logger().log(`Server running on http://localhost:3000`));
+bootstrap().then((r) => new Logger().log(`Server running`));
 
 function setupSwagger(app: INestApplication): void {
     const config = new DocumentBuilder()

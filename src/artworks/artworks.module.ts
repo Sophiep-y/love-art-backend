@@ -1,14 +1,20 @@
 import {Module} from '@nestjs/common';
 import {ArtworksController} from './artworks.controller';
 import {ArtworksService} from './artworks.service';
-import {artworksProviders} from "./artworks.providers";
-import {Artwork} from "./artworks.entity";
 import {DatabaseModule} from "../database/database.module";
+import {Database} from "../database/database";
+import {Artwork} from "./artworks.entity";
 
 @Module({
     imports: [DatabaseModule],
     controllers: [ArtworksController],
-    providers: [Artwork, ArtworksService, ...artworksProviders]
+    providers: [ArtworksService,
+        {
+            provide: "ARTWORK_REPOSITORY",
+            useFactory: (dataSource: any) => dataSource.getRepository(Artwork),
+            inject: [Database],
+        }
+    ]
 })
 export class ArtworksModule {
 }

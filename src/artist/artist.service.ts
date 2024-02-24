@@ -1,21 +1,19 @@
-import {Inject, Injectable} from "@nestjs/common";
+import {Inject, Injectable, Logger} from "@nestjs/common";
 import {ILike, Repository} from "typeorm";
 import {Artist} from "./artist.entity";
 
 @Injectable()
 export class ArtistService {
+    private logger = new Logger('ArtistService');
+
     constructor(
         @Inject("ARTIST_REPOSITORY")
-        private photoRepository: Repository<Artist>,
+        private artRepository: Repository<Artist>,
     ) {
     }
 
-    async findAll(): Promise<Artist[]> {
-        return this.photoRepository.find();
-    }
-
     async search(query: string): Promise<Artist[]> {
-        return this.photoRepository.find({
+        return this.artRepository.find({
             where: [
                 {firstname: ILike(`%${query}%`)},
                 {lastname: ILike(`%${query}%`)},
@@ -25,8 +23,13 @@ export class ArtistService {
     }
 
     async find(id: number): Promise<Artist> {
-        return this.photoRepository.findOne({
-            where: {id},
+        this.logger.log(`Finding artist with id: ${id}`);
+        const artist = this.artRepository.findOneBy({
+            id
         });
+        if (!artist) {
+            throw new Error(`Artist with id ${id} not found`);
+        }
+        return artist;
     }
 }
