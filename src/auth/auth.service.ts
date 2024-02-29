@@ -33,15 +33,15 @@ export class AuthService {
     async login(UserDTO: LoginDTO): Promise<Client> {
         const {email, password} = UserDTO;
         const user = await this.clientService.findByEmail(email);
-
+        if (!user)
+            throw new HttpException("User doesn't exists with given email", HttpStatus.BAD_REQUEST);
         if (user.need_password_reset) {
             throw new HttpException({
                 message: 'You need to reset your password',
                 error_code: 'NEED_PASSWORD_RESET',
             }, HttpStatus.BAD_REQUEST);
         }
-        if (!user)
-            throw new HttpException("User doesn't exists with given email", HttpStatus.BAD_REQUEST);
+
         if (!(await bcrypt.compare(password, user.secpass)))
             throw new HttpException('Invalid credential', HttpStatus.BAD_REQUEST);
         return user
@@ -69,12 +69,16 @@ export class AuthService {
                 HttpStatus.BAD_REQUEST,
             );
 
+        if (!client.otp_code) {
+            throw new HttpException('Your reset link is invalid', HttpStatus.BAD_REQUEST);
+        }
+
         if (client.otp_expire_at < new Date()) {
             throw new HttpException('Your reset link expired.', HttpStatus.BAD_REQUEST);
         }
 
         if (!(await bcrypt.compare(passwordResetDto.otp, client.otp_code)))
-            throw new HttpException('Your reset link did not match', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Your reset link is invalid', HttpStatus.BAD_REQUEST);
 
 
         if (await bcrypt.compare(passwordResetDto.newPassword, client.secpass)) {
@@ -86,6 +90,7 @@ export class AuthService {
 
         client.secpass = await this.hashString(passwordResetDto.newPassword);
         client.need_password_reset = 0;
+        client.otp_code = null;
         return this.clientService.update(client.id, client);
     }
 
