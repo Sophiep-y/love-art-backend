@@ -20,9 +20,8 @@ export class AuthController {
     @ApiOperation({summary: 'Log in a user'})
     @ApiBody({type: LoginDTO})
     async login(@Body() loginDTO: LoginDTO) {
-        const user = await this.authService.login(loginDTO);
-        const token = await this.authService.signPayload(user.email);
-        return {user, token};
+        const token = await this.authService.login(loginDTO);
+        return {token};
     }
 
     @Post('request-reset-password-link')
@@ -33,7 +32,17 @@ export class AuthController {
     }
 
 
-    @UseGuards(AuthGuard('jwt'), )
+
+
+    @Post('/reset-password')
+    @ApiOperation({summary: 'Reset password'})
+    @ApiBody({type: PasswordResetDto})
+    async resetPassword(@Body() passwordResetDto: PasswordResetDto) {
+        return await this.authService.resetPassword(passwordResetDto);
+    }
+
+
+    @UseGuards(AuthGuard('jwt'),)
     @Post('/change-password')
     @ApiOperation({summary: 'Change password'})
     @ApiBody({type: UpdatePasswordDTO})
@@ -48,12 +57,5 @@ export class AuthController {
         @Body() updatePasswordDTO: UpdatePasswordDTO,
     ) {
         return await this.authService.changePassword(client, updatePasswordDTO);
-    }
-
-    @Post('/reset-password')
-    @ApiOperation({summary: 'Reset password'})
-    @ApiBody({type: PasswordResetDto})
-    async resetPassword(@Body() passwordResetDto: PasswordResetDto) {
-        return await this.authService.resetPassword(passwordResetDto);
     }
 }

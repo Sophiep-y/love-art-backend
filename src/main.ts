@@ -1,7 +1,7 @@
 import {NestFactory} from "@nestjs/core";
 import {AppModule} from "./app.module";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
-import {INestApplication, Logger} from "@nestjs/common";
+import {INestApplication, Logger, ValidationPipe} from "@nestjs/common";
 import {ConfigService} from "@nestjs/config";
 
 async function bootstrap() {
@@ -17,6 +17,7 @@ async function bootstrap() {
     app.setGlobalPrefix("api")
     setupSwagger(app);
     const configService = app.get(ConfigService);
+    app.useGlobalPipes(new ValidationPipe());
     await app.listen(configService.get<number>("PORT") || 3000);
 
 }
