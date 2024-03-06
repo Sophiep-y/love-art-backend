@@ -12,6 +12,8 @@ import {ExhibitionsModule} from './exhibitions/exhibitions.module';
 import {AuthController} from './auth/auth.controller';
 import {ClientModule} from './client/client.module';
 import {AuthModule} from "./auth/auth.module";
+import { StorageService } from './storage/storage.service';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
     imports: [
@@ -23,6 +25,7 @@ import {AuthModule} from "./auth/auth.module";
         ExhibitionsModule,
         ClientModule,
         AuthModule,
+        StorageModule,
     ],
     controllers: [AppController, ExhibitionsController, AuthController],
     providers: [AppService],
