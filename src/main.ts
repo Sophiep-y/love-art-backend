@@ -8,6 +8,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.enableCors({
         origin: [
+<<<<<<< Updated upstream
             'https://love-art-git-wipbranch-love-art.vercel.app',
             'https://loveart.duckdns.org',
             'http://54.227.86.84',
@@ -17,6 +18,15 @@ async function bootstrap() {
             '*'
         ],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+=======
+'https://loveart.duckdns.org/', 'http://loveart.duckdns.org/', 'https://loveart.duckdns.org', 'http://loveart.duckdns.org',
+'http://localhost:3000', 
+            'https://www.loveart.duckdns.org/', 'http://www.loveart.duckdns.org/', 'https://www.loveart.duckdns.org', 'http://www.loveart.duckdns.org',
+
+	
+	],
+	methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+>>>>>>> Stashed changes
         preflightContinue: false,
         optionsSuccessStatus: 204,
         credentials: true,
