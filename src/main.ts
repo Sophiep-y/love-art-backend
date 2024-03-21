@@ -10,8 +10,11 @@ async function bootstrap() {
         origin: [
             'https://love-art-git-wipbranch-love-art.vercel.app',
             'https://loveart.duckdns.org',
-            'http:http://54.227.86.84',
+            'http://54.227.86.84',
             'http://localhost:3000',
+
+            'https://www.loveart.duckdns.org/', 'http://www.loveart.duckdns.org/', 'https://www.loveart.duckdns.org', 'http://www.loveart.duckdns.org',
+            '*'
         ],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         preflightContinue: false,

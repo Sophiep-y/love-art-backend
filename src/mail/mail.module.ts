@@ -10,6 +10,7 @@ import {ConfigModule} from '@nestjs/config';
         ConfigModule.forRoot(),
         MailerModule.forRoot({
             transport: {
+                service: 'gmail',
                 host: process.env.MAIL_HOST,
                 port: Number(process.env.MAIL_HOST_PORT),
                 secure: true,
