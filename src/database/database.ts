@@ -17,9 +17,9 @@ export class Database {
             database: this.configService.get<string>('DB_NAME'),
             entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         });
-        // this.initializeDataSource().then(r =>
-        //     console.log('Database connection established')
-        // );
+        this.initializeDataSource().then(r =>
+            console.log('Database connection established')
+        );
     }
 
     async initializeDataSource() {
