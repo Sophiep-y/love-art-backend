@@ -9,6 +9,8 @@ async function bootstrap() {
     app.enableCors({
         origin: [
             'https://love-art-git-wipbranch-love-art.vercel.app',
+            'https://loveart.duckdns.org',
+            'http:http://54.227.86.84',
             'http://localhost:3000',
         ],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
