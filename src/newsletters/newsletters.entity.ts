@@ -61,4 +61,5 @@ export class Newsletters {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   gallery: string;
+
 }

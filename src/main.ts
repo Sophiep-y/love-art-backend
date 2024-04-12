@@ -20,7 +20,7 @@ async function bootstrap() {
         credentials: true,
     })
 
-    app.setGlobalPrefix("api")
+    app.setGlobalPrefix("api",)
     setupSwagger(app);
     const configService = app.get(ConfigService);
     app.useGlobalPipes(new ValidationPipe());

@@ -19,7 +19,9 @@ export class ArchivesController {
     ): Promise<Pagination<Newsletters>> {
 
         return await this.newslettersService.findAll(
-            options
+            {
+                ...options,
+            }
         );
     }
 }
