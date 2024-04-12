@@ -8,17 +8,23 @@ export class ArtworksService {
 
   constructor(
     @Inject("ARTWORK_REPOSITORY")
-    private artistRepository: Repository<Artwork>,
+    private artworkRepository: Repository<Artwork>,
+
+
   ) {
   }
 
   async findAll(options: PaginationOptions): Promise<Pagination<Artwork>> {
-    const queryBuilder = this.artistRepository.createQueryBuilder('newsletters');
-    return await queryBuilder.paginate<Artwork>(options);
+    const queryBuilder = this.artworkRepository.createQueryBuilder('artwork')
+        .leftJoinAndSelect('artwork.artistObj', 'artist');
+   return queryBuilder.paginate<Artwork>({
+     ...options,
+     orderBy: 'artwork.id'
+   });
   }
 
   async findOne(id: number): Promise<Artwork> {
-    const artwork = await this.artistRepository.findOne({
+    const artwork = await this.artworkRepository.findOne({
       where: { id },
     });
     if (!artwork) {

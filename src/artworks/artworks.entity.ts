@@ -1,4 +1,5 @@
-import {Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Artist} from "../artist/artist.entity";
 
 @Entity('artworks')
 export class Artwork {
@@ -96,19 +97,23 @@ export class Artwork {
     @Column({type: 'text', nullable: true})
     purchaser: string;
 
-
     @Column({type: 'int', nullable: true})
     clientid: number;
 
 
     @Column({type: 'int', nullable: true})
-    @Index()
     artist_id: number;
-
 
     @Column({type: 'int', nullable: true})
     @Index()
     fm_id: number;
+
+    @ManyToOne(() => Artist)
+    @JoinColumn({
+        name: 'fm_id',
+        referencedColumnName: 'fm_id'
+    })
+    artistObj: Artist;
 
     @Column({type: 'text', charset: 'utf8', nullable: true})
     workdescription: string;

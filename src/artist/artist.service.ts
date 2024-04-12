@@ -8,12 +8,12 @@ export class ArtistService {
 
   constructor(
     @Inject("ARTIST_REPOSITORY")
-    private artRepository: Repository<Artist>,
+    private artistRepository: Repository<Artist>,
   ) {
   }
 
   async search(query: string): Promise<Artist[]> {
-    return this.artRepository.find({
+    return this.artistRepository.find({
       where: [
         { firstname: ILike(`%${query}%`) },
         { lastname: ILike(`%${query}%`) },
@@ -24,7 +24,7 @@ export class ArtistService {
 
   async find(id: number): Promise<Artist> {
     this.logger.log(`Finding artist with id: ${id}`);
-    const artist = await this.artRepository.createQueryBuilder('artists').where('artists.id = :id', { id }).getOne();
+    const artist = await this.artistRepository.createQueryBuilder('artists').where('artists.id = :id', { id }).getOne();
     if (!artist) {
       throw new HttpException('Could not find an artist', HttpStatus.NOT_FOUND);
     }

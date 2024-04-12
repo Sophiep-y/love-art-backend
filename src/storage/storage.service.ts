@@ -1,36 +1,50 @@
 import {Injectable, Logger} from '@nestjs/common';
-import { Client } from 'basic-ftp';
+import {Client} from 'basic-ftp';
 import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class StorageService {
-    private sftp: Client;
-    private remotePath: string;
+    private client: Client;
 
     private logger = new Logger('StorageService');
 
     constructor(
         private readonly configService: ConfigService
     ) {
-        this.sftp = new Client();
-        this.remotePath = '/public_html'; // replace with your actual path
+        this.client = new Client();
         this.connect().then(r =>
-            this.logger.log('Connected to SFTP server')
+            this.logger.log('FTP Setup Complete')
         );
     }
 
-    async connect() {
-        this.logger.log('Connecting to SFTP server');
-        this.logger.log('FTP_HOST: ' + process.env.FTP_HOST);
-        this.logger.log('FTP_PORT: ' + process.env.FTP_PORT);
-        this.logger.log('FTP_USERNAME: ' + process.env.FTP_USERNAME);
-        this.logger.log('FTP_PASSWORD: ' + process.env.FTP_PASSWORD);
-        await this.sftp.access({
-            host: process.env.FTP_HOST,
-            port: Number(process.env.FTP_PORT),
-            user: process.env.FTP_USERNAME,
-            password: process.env.FTP_PASSWORD,
-        });
+    private async connect(): Promise<void> {
+        try {
+            this.logger.log('Connecting to FTP server');
+
+
+            const ftpHost = this.configService.get<string>('FTP_HOST')
+            const ftpPort = this.configService.get<number>('FTP_PORT')
+            const ftpUsername = this.configService.get<string>('FTP_USERNAME')
+            const ftpPassword = this.configService.get<string>('FTP_PASSWORD')
+
+
+            this.logger.log('FTP_HOST: ' + ftpHost);
+            this.logger.log('FTP_PORT: ' + ftpPort);
+            this.logger.log('FTP_USERNAME: ' + ftpUsername);
+            this.logger.log('FTP_PASSWORD: ' + ftpPassword);
+
+            await this.client.access({
+                host: ftpHost,
+                port: ftpPort,
+                user: ftpUsername,
+                password: ftpPassword,
+            });
+            this.logger.log('Connected to FTP server')
+        } catch (e) {
+            this.logger.error('Failed to Connect FTPS' + e);
+        }
     }
+
+
 
 }

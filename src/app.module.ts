@@ -25,7 +25,7 @@ import { StorageModule } from './storage/storage.module';
         ExhibitionsModule,
         ClientModule,
         AuthModule,
-        // StorageModule,
+        StorageModule,
     ],
     controllers: [AppController, ExhibitionsController, AuthController],
     providers: [AppService],
