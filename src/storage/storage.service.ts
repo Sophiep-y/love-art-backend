@@ -94,7 +94,7 @@ export class StorageService {
             res.sendFile(localPath);
         } else {
             // If file is not in cache, retrieve it from FTP server
-            this.client.downloadTo(localPath, path.join('public_html', filePath)).then(() => {
+            await this.client.downloadTo(localPath, path.join('public_html', filePath)).then(() => {
                 // Check cache size
                 let cacheSize = this.getDirectorySize(this.cacheDirectory);
 
