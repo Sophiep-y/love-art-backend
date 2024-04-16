@@ -89,12 +89,30 @@ export class StorageService {
             return;
         }
 
+
+        // Create a new FTP client for this operation
+        const client = new Client();
+
+        // Connect to the FTP server
+        const ftpHost = this.configService.get<string>('FTP_HOST');
+        const ftpPort = this.configService.get<number>('FTP_PORT');
+        const ftpUsername = this.configService.get<string>('FTP_USERNAME');
+        const ftpPassword = this.configService.get<string>('FTP_PASSWORD');
+
+        await client.access({
+            host: ftpHost,
+            port: ftpPort,
+            user: ftpUsername,
+            password: ftpPassword,
+        });
+
+
         // Check if file is in cache
         if (fs.existsSync(localPath)) {
             res.sendFile(localPath);
         } else {
             // If file is not in cache, retrieve it from FTP server
-            await this.client.downloadTo(localPath, path.join('public_html', filePath)).then(() => {
+            await client.downloadTo(localPath, path.join('public_html', filePath)).then(() => {
                 // Check cache size
                 let cacheSize = this.getDirectorySize(this.cacheDirectory);
 
