@@ -151,11 +151,6 @@ export class AuthService {
 
         return {
             message: 'Email sent successfully. Please check your email for the reset link.',
-            debug: {
-                otp: otp,
-                expire_at: client.otp_expire_at,
-                link: url.toString()
-            }
         };
     }
 

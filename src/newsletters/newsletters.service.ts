@@ -12,8 +12,11 @@ export class NewslettersService {
     }
 
     async findAll(options: PaginationOptions): Promise<Pagination<Newsletters>> {
-        const queryBuilder = this.newslettersRepository.createQueryBuilder('newsletters');
-        return await queryBuilder.paginate<Newsletters>(options);
+        const queryBuilder = this.newslettersRepository.createQueryBuilder('newsletters')
+            .leftJoinAndSelect('newsletters.newsArtworks', 'newsartworks');
+        return await queryBuilder.paginate<Newsletters>({
+            ...options,
+            orderBy: 'newsletters.id'
+        });
     }
-
 }

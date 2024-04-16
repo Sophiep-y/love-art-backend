@@ -14,6 +14,7 @@ import {ClientModule} from './client/client.module';
 import {AuthModule} from "./auth/auth.module";
 import { StorageService } from './storage/storage.service';
 import { StorageModule } from './storage/storage.module';
+import { NewsartworksModule } from './newsartworks/newsartworks.module';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { StorageModule } from './storage/storage.module';
         ClientModule,
         AuthModule,
         StorageModule,
+        NewsartworksModule,
     ],
     controllers: [AppController, ExhibitionsController, AuthController],
     providers: [AppService],

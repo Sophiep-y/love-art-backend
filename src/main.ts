@@ -23,7 +23,12 @@ async function bootstrap() {
     app.setGlobalPrefix("api",)
     setupSwagger(app);
     const configService = app.get(ConfigService);
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(new ValidationPipe(
+        {
+            transform: true,
+            whitelist: true,
+        }
+    ));
     await app.listen(configService.get<number>("PORT") || 3000);
 
 }
