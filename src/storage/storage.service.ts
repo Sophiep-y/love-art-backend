@@ -4,6 +4,7 @@ import {ConfigService} from "@nestjs/config";
 import * as fs from 'fs';
 import * as path from 'path';
 
+
 /**
  * Service for handling storage operations.
  */
@@ -12,10 +13,14 @@ export class StorageService {
     private client: Client;
     private logger = new Logger('StorageService');
 
+    private busy = false;
+    private fileRequestQueue: { filePath: string, res: any }[] = [];
+
     // Cache directory path
     private cacheDirectory = path.join(__dirname, '../../.cache');
     // Maximum cache size (1GB)
     private maxCacheSize = 1024 * 1024 * 1024;
+
 
     constructor(private readonly configService: ConfigService) {
         this.client = new Client();
@@ -66,12 +71,15 @@ export class StorageService {
         return fileStats.reduce((total, size) => total + size, 0);
     }
 
+
     /**
      * Get a file from the cache or the FTP server.
      * @param filePath - The path of the file.
      * @param res - The response object.
      */
     async getFile(filePath: string, @Res() res: any) {
+
+
         if (!fs.existsSync(this.cacheDirectory)) {
             fs.mkdirSync(this.cacheDirectory, {recursive: true});
         }
@@ -90,52 +98,64 @@ export class StorageService {
         }
 
 
-        // Create a new FTP client for this operation
-        const client = new Client();
-
-        // Connect to the FTP server
-        const ftpHost = this.configService.get<string>('FTP_HOST');
-        const ftpPort = this.configService.get<number>('FTP_PORT');
-        const ftpUsername = this.configService.get<string>('FTP_USERNAME');
-        const ftpPassword = this.configService.get<string>('FTP_PASSWORD');
-
-        await client.access({
-            host: ftpHost,
-            port: ftpPort,
-            user: ftpUsername,
-            password: ftpPassword,
-        });
-
-
-        // Check if file is in cache
-        if (fs.existsSync(localPath)) {
-            res.sendFile(localPath);
+        if (this.busy) {
+            this.logger.log('Busy, adding to queue: ' + filePath);
+            this.fileRequestQueue.push({filePath, res});
         } else {
-            // If file is not in cache, retrieve it from FTP server
-            await client.downloadTo(localPath, path.join('public_html', filePath)).then(() => {
-                // Check cache size
-                let cacheSize = this.getDirectorySize(this.cacheDirectory);
-
-                // If cache size exceeds maximum, delete oldest files
-                if (cacheSize > this.maxCacheSize) {
-                    const files = fs.readdirSync(this.cacheDirectory).map(file => ({
-                        file,
-                        mtime: fs.statSync(path.join(this.cacheDirectory, file)).mtime,
-                    }));
-
-                    files.sort((a, b) => a.mtime.getTime() - b.mtime.getTime());
-
-                    while (cacheSize > this.maxCacheSize && files.length > 0) {
-                        fs.unlinkSync(path.join(this.cacheDirectory, files.shift().file));
-                        cacheSize = this.getDirectorySize(this.cacheDirectory);
-                    }
-                }
-
-                res.sendFile(localPath);
-            }).catch(err => {
-                this.logger.error('Error retrieving file: ' + err);
-                res.status(500).send('Error retrieving file.');
-            });
+            await this.processFileRequest(filePath, res);
         }
+
+
+    }
+
+    private async processFileRequest(filePath: string, res: any) {
+        this.busy = true;
+        try {
+            const localPath = path.join(this.cacheDirectory, filePath);
+
+            // Check if file is in cache
+            if (fs.existsSync(localPath)) {
+                res.sendFile(localPath);
+                this.logger.log('File served from cache: ' + filePath);
+            } else {
+                // If file is not in cache, retrieve it from FTP server
+                await this.client.downloadTo(localPath, path.join('public_html', filePath)).then(() => {
+                    // Check cache size
+                    let cacheSize = this.getDirectorySize(this.cacheDirectory);
+
+                    // If cache size exceeds maximum, delete oldest files
+                    if (cacheSize > this.maxCacheSize) {
+                        const files = fs.readdirSync(this.cacheDirectory).map(file => ({
+                            file,
+                            mtime: fs.statSync(path.join(this.cacheDirectory, file)).mtime,
+                        }));
+
+                        files.sort((a, b) => a.mtime.getTime() - b.mtime.getTime());
+
+                        while (cacheSize > this.maxCacheSize && files.length > 0) {
+                            fs.unlinkSync(path.join(this.cacheDirectory, files.shift().file));
+                            cacheSize = this.getDirectorySize(this.cacheDirectory);
+                        }
+                    }
+
+                    res.sendFile(localPath);
+                }).catch(err => {
+                    this.logger.error('Error retrieving file: ' + err);
+                    res.status(500).send('Error retrieving file.');
+                });
+            }
+
+            // After processing the request, check if there are any pending requests in the queue
+            if (this.fileRequestQueue.length > 0) {
+                this.logger.log('Processing next request in queue for: ' + filePath);
+                // If there are, process the first request in the queue
+                const nextRequest = this.fileRequestQueue.shift();
+                await this.processFileRequest(nextRequest.filePath, nextRequest.res);
+            }
+
+        } catch (e) {
+            this.logger.error('Error processing file request: ' + e);
+        }
+        this.busy = false;
     }
 }
