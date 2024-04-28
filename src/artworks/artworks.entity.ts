@@ -110,7 +110,7 @@ export class Artwork {
 
     @ManyToOne(() => Artist)
     @JoinColumn({
-        name: 'fm_id',
+        name: 'artist_id',
         referencedColumnName: 'fm_id'
     })
     artistObj: Artist;

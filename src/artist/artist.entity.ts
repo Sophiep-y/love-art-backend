@@ -1,4 +1,5 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Artwork} from "../artworks/artworks.entity";
 
 
 @Entity('artists')
@@ -29,4 +30,7 @@ export class Artist {
 
     @Column({type: 'varchar', length: 255, nullable: true})
     birthplace: string;
+
+    @OneToMany(() => Artwork, artwork => artwork.artistObj)
+    artworks: Artwork[];
 }
