@@ -15,6 +15,10 @@ export class ClientService {
         return this.clientRepository.findOne({where: {email: email}})
     }
 
+    findByUsername(username: string): Promise<Client> {
+        return this.clientRepository.findOne({where: {webusername: username}})
+    }
+
 
     //update only the specified fields
     async update(id: number, client: Partial<Client>) {

@@ -22,22 +22,22 @@ export class AuthService {
 
     /**
      * Signs a payload with a secret key.
-     * @param email - The email to be signed.
+     * @param username - The email to be signed.
      * @returns The signed payload.
      */
-    async signPayload(email: string) {
-        return sign({email}, process.env.JWT_SECRET, {
+    async signPayload(username: string) {
+        return sign({username}, process.env.JWT_SECRET, {
             expiresIn: this.configService.get<string>('JWT_EXPIRE_TIME'),
         });
     }
 
     /**
      * Validates a user by their email.
-     * @param email - The email of the user.
+     * @param username - The email of the user.
      * @returns The user if found, otherwise null.
      */
-    async validateUser(email: string) {
-        return this.clientService.findByEmail(email);
+    async validateUser(username: string) {
+        return this.clientService.findByUsername(username);
     }
 
     /**
@@ -47,15 +47,15 @@ export class AuthService {
      * @throws {HttpException} If the user does not exist or the password is incorrect.
      */
     async login(UserDTO: LoginDTO): Promise<Client> {
-        const {email, password} = UserDTO;
-        const user = await this.clientService.findByEmail(email);
+        const {username, password} = UserDTO;
+        const user = await this.clientService.findByUsername(username);
         if (!user) {
-            throw new HttpException("User doesn't exists with given email", HttpStatus.BAD_REQUEST);
+            throw new HttpException("User doesn't exists with given username", HttpStatus.BAD_REQUEST);
         }
         if (!(await bcrypt.compare(password, user.secpass))) {
             throw new HttpException('Invalid credential', HttpStatus.BAD_REQUEST);
         }
-        return await this.signPayload(user.email);
+        return await this.signPayload(user.webusername);
     }
 
     /**

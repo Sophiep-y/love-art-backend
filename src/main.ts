@@ -6,15 +6,27 @@ import {ConfigService} from "@nestjs/config";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    app.enableCors({
-        origin: [
-'https://loveart.duckdns.org/', 'http://loveart.duckdns.org/', 'https://loveart.duckdns.org', 'http://loveart.duckdns.org',
-'http://localhost:3000', 
-            'https://www.loveart.duckdns.org/', 'http://www.loveart.duckdns.org/', 'https://www.loveart.duckdns.org', 'http://www.loveart.duckdns.org',
+    // app.enableCors({
+    //     origin: [
+    //         'http://localhost:3000',
+    //         'https://loveart.duckdns.org/',
+    //         'http://loveart.duckdns.org/',
+    //         'https://loveart.duckdns.org',
+    //         'http://loveart.duckdns.org',
+    //         'https://www.loveart.duckdns.org/',
+    //         'http://www.loveart.duckdns.org/',
+    //         'https://www.loveart.duckdns.org',
+    //         'http://www.loveart.duckdns.org',
+    //     ],
+    //     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    //     preflightContinue: false,
+    //     optionsSuccessStatus: 204,
+    //     credentials: true,
+    // })
 
-	
-	],
-	methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    app.enableCors({
+        origin: "*",
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         preflightContinue: false,
         optionsSuccessStatus: 204,
         credentials: true,
@@ -29,6 +41,7 @@ async function bootstrap() {
             whitelist: true,
         }
     ));
+    console.log(configService.get<number>("PORT") || 3000);
     await app.listen(configService.get<number>("PORT") || 3000);
 
 }
