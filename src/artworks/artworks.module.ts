@@ -14,8 +14,6 @@ import {Artwork} from "./artworks.entity";
             useFactory: (dataSource: any) => dataSource.getRepository(Artwork),
             inject: [Database],
         },
-
-
     ]
 })
 export class ArtworksModule {

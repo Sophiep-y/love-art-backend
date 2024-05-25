@@ -76,7 +76,7 @@ declare module 'typeorm' {
  * @returns A Promise that resolves to a Pagination object containing results and metadata.
  */
 SelectQueryBuilder.prototype.paginate = async function <T>(options: PaginationOptions): Promise<Pagination<T>> {
-    let {page = 1, limit = 10} = options;
+    let {page = 1, limit = 20} = options;
     page = Number(page);
     limit = Number(limit);
     // Check if pagination options are valid

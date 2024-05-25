@@ -1,5 +1,7 @@
 import {Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {Artist} from "../artist/artist.entity";
+import {Expose} from "class-transformer";
+import * as crypto from 'crypto';
 
 @Entity('artworks')
 export class Artwork {
@@ -141,5 +143,17 @@ export class Artwork {
 
     @Column({type: 'varchar', length: 40, nullable: true})
     gstinpurchaseau: string;
+
+
+    @Expose(
+        {
+            toPlainOnly: true
+        }
+    )
+    get image_url(): string {
+        const hash = crypto.createHash('md5').update(this.fm_id.toString() + ".jpgamanda").digest('hex');
+        console.log(`URL ${hash}`);
+        return `${this.fm_id}_${hash}.jpg`;
+    }
 
 }

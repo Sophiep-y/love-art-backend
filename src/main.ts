@@ -1,8 +1,14 @@
 import {NestFactory} from "@nestjs/core";
 import {AppModule} from "./app.module";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
-import {INestApplication, Logger, ValidationPipe} from "@nestjs/common";
+import {ArgumentMetadata, INestApplication, Logger, PipeTransform, ValidationPipe} from "@nestjs/common";
 import {ConfigService} from "@nestjs/config";
+import {instanceToPlain} from 'class-transformer';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { classToPlain } from 'class-transformer';
+
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -36,11 +42,16 @@ async function bootstrap() {
     setupSwagger(app);
     const configService = app.get(ConfigService);
     app.useGlobalPipes(new ValidationPipe(
-        {
-            transform: true,
-            whitelist: true,
-        }
-    ));
+            {
+                transform: true,
+                whitelist: true,
+            }
+        ),
+    );
+
+    app.useGlobalInterceptors(
+        new TransformResponseInterceptor(),
+    )
     console.log(configService.get<number>("PORT") || 3000);
     await app.listen(configService.get<number>("PORT") || 3000);
 
@@ -57,4 +68,12 @@ function setupSwagger(app: INestApplication): void {
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup("/api-docs", app, document);
+}
+
+
+@Injectable()
+export class TransformResponseInterceptor implements NestInterceptor {
+    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+        return next.handle().pipe(map(data => instanceToPlain(data)));
+    }
 }
