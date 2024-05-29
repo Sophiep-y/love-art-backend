@@ -23,7 +23,9 @@ export class StorageService {
 
 
     constructor(private readonly configService: ConfigService) {
-        this.client = new Client();
+        this.client = new Client(
+            60000,
+        );
         this.connect().then(r => this.logger.log('FTP Setup Complete'));
     }
 
