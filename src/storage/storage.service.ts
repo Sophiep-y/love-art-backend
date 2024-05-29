@@ -24,7 +24,7 @@ export class StorageService {
 
     constructor(private readonly configService: ConfigService) {
         this.client = new Client(
-            60000,
+            100000,
         );
         this.connect().then(r => this.logger.log('FTP Setup Complete'));
     }
@@ -121,7 +121,9 @@ export class StorageService {
                 this.logger.log('File served from cache: ' + filePath);
             } else {
                 // If file is not in cache, retrieve it from FTP server
-                await this.client.downloadTo(localPath, path.join('public_html', filePath)).then(() => {
+                try {
+                    await this.client.downloadTo(localPath, path.join('public_html', filePath));
+
                     // Check cache size
                     let cacheSize = this.getDirectorySize(this.cacheDirectory);
 
@@ -141,10 +143,11 @@ export class StorageService {
                     }
 
                     res.sendFile(localPath);
-                }).catch(err => {
+                } catch (err) {
                     this.logger.error('Error retrieving file: ' + err);
                     res.status(500).send('Error retrieving file.');
-                });
+                }
+
             }
 
             // After processing the request, check if there are any pending requests in the queue
